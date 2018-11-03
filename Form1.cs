@@ -74,6 +74,9 @@ namespace Clock
         /// </summary>
         private void contextMenuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
+            // manually hide the context menu as soon as the user clicks an item
+            this.contextMenuStrip1.Hide();
+
             // use the visual text, since that's the constant value we set in this class, above
             switch(e.ClickedItem.Name)
             {
@@ -88,6 +91,14 @@ namespace Clock
                 default:
                     break;
             }
+        }
+        private void Form1_ResizeEnd(object sender, EventArgs e)
+        {
+            // update the font size to match the form size
+            Font currentFont = this.label1.Font;
+            float newSize = GetNewFontSize(this.label1.ClientSize);
+            Font newFont = new Font(currentFont.FontFamily, newSize, currentFont.Style);
+            this.label1.Font = newFont;
         }
         #endregion
 
@@ -106,6 +117,18 @@ namespace Clock
             }
             // or else return the default current color
             else return currentColor;
+        }
+        /// <summary>
+        /// Calculate the proper font size from the available window size.
+        /// </summary>
+        /// <param name="labelSize">the parent container size we need to match</param>
+        /// <returns>the font size to fit</returns>
+        private float GetNewFontSize(Size labelSize)
+        {
+            // future: account for both height and text width
+
+            // for now, a simple formula is close enough.
+            return labelSize.Height / 2;
         }
         #endregion
     }
