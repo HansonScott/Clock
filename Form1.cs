@@ -21,6 +21,15 @@ namespace Clock
         #region Fields and Properties
         const string ToolStripMenuItem1Name = "Back Color";
         const string ToolStripMenuItem2Name = "Text Color";
+        const string ToolStripMenuItem3Name = "Format";
+
+        // make this a public property so it can be bound to the text box in the format control
+        public string ClockFormat
+        {
+            get { return ThisPicker.Format;}
+        }
+
+        private FormatPicker ThisPicker = null;
         #endregion
 
         #region Constructor
@@ -31,12 +40,15 @@ namespace Clock
             // manually set the context menu names, so we can use the same values programatically elsewhere
             this.toolStripMenuItem1.Name = ToolStripMenuItem1Name;
             this.toolStripMenuItem2.Name = ToolStripMenuItem2Name;
+            this.toolStripMenuItem3.Name = ToolStripMenuItem3Name;
 
             // get and display the version as part of the title
             Assembly assembly = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
             string version = fvi.FileVersion;
             Text = $"Clock - {version}";
+
+            ThisPicker = new FormatPicker();
         }
         #endregion
 
@@ -46,8 +58,7 @@ namespace Clock
         /// </summary>
         private void timer1_Tick(object sender, EventArgs e)
         {
-            // tt is the AM/PM suffix
-            this.label1.Text = DateTime.Now.ToString("hh:mm:ss tt");
+            this.label1.Text = DateTime.Now.ToString(ClockFormat);
         }
         /// <summary>
         /// This is the context menu click (right click) handler to open the context menu
@@ -82,10 +93,14 @@ namespace Clock
                 case ToolStripMenuItem2Name:
                     this.label1.ForeColor = GetColorFromPicker(this.label1.ForeColor);
                     break;
+                case ToolStripMenuItem3Name:
+                    HandleChangeFormat();
+                    break;
                 default:
                     break;
             }
         }
+
         private void Form1_ResizeEnd(object sender, EventArgs e)
         {
             // update the font size to match the form size
@@ -123,6 +138,13 @@ namespace Clock
 
             // for now, a simple formula is close enough.
             return labelSize.Height / 2;
+        }
+        /// <summary>
+        /// when the user wants to change the format, this function provides the UI
+        /// </summary>
+        private void HandleChangeFormat()
+        {
+            ThisPicker.ShowDialog();
         }
         #endregion
     }
