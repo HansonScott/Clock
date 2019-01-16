@@ -7,7 +7,6 @@ When using multiple monitors, sometimes the standard windows clock gets hidden b
 # Features
 * Pulls from the local machine clock
 * Updates every second on a timer
-
-# Future plans
 * color picker for background and text
-* font resizing with window resizing
+* font resizes dynamically with window resizing
+* text of the date format is configurable as well.
