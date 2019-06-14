@@ -21,7 +21,9 @@ namespace Clock
         #region Fields and Properties
         const string ToolStripMenuItem1Name = "Back Color";
         const string ToolStripMenuItem2Name = "Text Color";
-        const string ToolStripMenuItem3Name = "Format";
+        const string ToolStripMenuItem3Name = "Digital Format";
+        const string ToolStripMenuItem4Name = "analogClockToolStripMenuItem";
+        const string ToolStripMenuItem5Name = "digitalClockToolStripMenuItem";
 
         // make this a public property so it can be bound to the text box in the format control
         public string ClockFormat
@@ -30,6 +32,13 @@ namespace Clock
         }
 
         private FormatPicker ThisPicker = null;
+
+        private ClockType CurrentClockType = ClockType.Digital;
+        enum ClockType
+        {
+            Analog = 0,
+            Digital = 1,
+        }
         #endregion
 
         #region Constructor
@@ -58,7 +67,7 @@ namespace Clock
         /// </summary>
         private void timer1_Tick(object sender, EventArgs e)
         {
-            this.label1.Text = DateTime.Now.ToString(ClockFormat);
+            UpdateDisplay(CurrentClockType);
         }
         /// <summary>
         /// This is the context menu click (right click) handler to open the context menu
@@ -85,16 +94,22 @@ namespace Clock
             // use the visual text, since that's the constant value we set in this class, above
             switch(e.ClickedItem.Name)
             {
-                case ToolStripMenuItem1Name:
+                case ToolStripMenuItem1Name: // back color
                     // since there is a margin between the label and form, set both
                     this.label1.BackColor = GetColorFromPicker(this.label1.BackColor);
                     this.BackColor = this.label1.BackColor;
                     break;
-                case ToolStripMenuItem2Name:
+                case ToolStripMenuItem2Name: // forecolor
                     this.label1.ForeColor = GetColorFromPicker(this.label1.ForeColor);
                     break;
-                case ToolStripMenuItem3Name:
+                case ToolStripMenuItem3Name: // format
                     HandleChangeFormat();
+                    break;
+                case ToolStripMenuItem4Name: // Analog Clock
+                    CurrentClockType = ClockType.Analog;
+                    break;
+                case ToolStripMenuItem5Name: // Digital Clock
+                    CurrentClockType = ClockType.Digital;
                     break;
                 default:
                     break;
@@ -146,6 +161,50 @@ namespace Clock
         {
             ThisPicker.ShowDialog();
         }
+        /// <summary>
+        /// Updates the display, based on the current clock type
+        /// </summary>
+        /// <param name="currentClockType"></param>
+        private void UpdateDisplay(ClockType currentClockType)
+        {
+            switch (currentClockType)
+            {
+                case ClockType.Analog:
+                    this.label1.Visible = false;
+
+                    break;
+                case ClockType.Digital:
+                default:
+                    this.label1.Visible = true;
+                    this.label1.Text = DateTime.Now.ToString(ClockFormat);
+                    break;
+            }
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            if(CurrentClockType == ClockType.Analog)
+            {
+                DrawClock(DateTime.Now, e.Graphics);
+            }
+        }
+
+        private void DrawClock(DateTime stamp, Graphics g)
+        {
+            // draw circle
+
+            // draw hour notches
+
+            // draw labels?
+
+            // draw hour hand
+
+            // draw minute hand
+
+        }
+
         #endregion
     }
 }

@@ -34,8 +34,10 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.analogClockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.digitalClockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,38 +67,53 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
             this.toolStripMenuItem2,
-            this.toolStripMenuItem3});
+            this.toolStripMenuItem3,
+            this.analogClockToolStripMenuItem,
+            this.digitalClockToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(150, 114);
             this.contextMenuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.contextMenuStrip1_ItemClicked);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 22);
             this.toolStripMenuItem1.Text = "Back Color";
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(149, 22);
             this.toolStripMenuItem2.Text = "Text Color";
-            // 
-            // colorDialog1
-            // 
-            this.colorDialog1.FullOpen = true;
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem3.Text = "Format";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(149, 22);
+            this.toolStripMenuItem3.Text = "Digital Format";
+            // 
+            // analogClockToolStripMenuItem
+            // 
+            this.analogClockToolStripMenuItem.Name = "analogClockToolStripMenuItem";
+            this.analogClockToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.analogClockToolStripMenuItem.Text = "Analog Clock";
+            // 
+            // digitalClockToolStripMenuItem
+            // 
+            this.digitalClockToolStripMenuItem.Name = "digitalClockToolStripMenuItem";
+            this.digitalClockToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.digitalClockToolStripMenuItem.Text = "Digital Clock";
+            // 
+            // colorDialog1
+            // 
+            this.colorDialog1.FullOpen = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(427, 100);
+            this.ContextMenuStrip = this.contextMenuStrip1;
             this.Controls.Add(this.label1);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -117,6 +134,8 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem analogClockToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem digitalClockToolStripMenuItem;
     }
 }
 
