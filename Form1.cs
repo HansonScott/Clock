@@ -24,6 +24,7 @@ namespace Clock
         const string ToolStripMenuItem3Name = "Digital Format";
         const string ToolStripMenuItem4Name = "analogClockToolStripMenuItem";
         const string ToolStripMenuItem5Name = "digitalClockToolStripMenuItem";
+        const string ToolStripMenuItem6Name = "toolStripMenuItem4";
 
         // make this a public property so it can be bound to the text box in the format control
         public string ClockFormat
@@ -33,12 +34,34 @@ namespace Clock
 
         private FormatPicker ThisPicker = null;
 
-        private ClockType CurrentClockType = ClockType.Analog;
+        private ClockType CurrentClockType = ClockType.Digital;
+
         enum ClockType
         {
             Analog = 0,
             Digital = 1,
         }
+
+        #region Analog Clock Variables
+        Point CenterPoint;
+        Rectangle clockRect;
+        int DisplayDiameter;
+        int ClockDiameter;
+        int ClockRadius;
+        double NotchRadius;
+        double HourhandRadius;
+        double MinutehandRadius;
+
+        float hourNotchThickness;
+        float HourHandWidth;
+        float minuteThickness;
+
+        float ClockEdgeThickness = 3;
+        Color ClockBackColor = Color.Black;
+        Color ClockEdgeColor = Color.DarkGray;
+        Brush ClockBackBrush;
+        Brush ClockEdgeBrush;
+        #endregion
         #endregion
 
         #region Constructor
@@ -58,6 +81,9 @@ namespace Clock
             Text = $"Clock - {version}";
 
             ThisPicker = new FormatPicker();
+
+            ClockBackBrush = new SolidBrush(ClockBackColor);
+            ClockEdgeBrush = new SolidBrush(ClockEdgeColor);
         }
         #endregion
 
@@ -101,6 +127,8 @@ namespace Clock
                     break;
                 case ToolStripMenuItem2Name: // forecolor
                     this.label1.ForeColor = GetColorFromPicker(this.label1.ForeColor);
+                    this.ClockEdgeColor = this.label1.ForeColor;
+                    this.ClockEdgeBrush = new SolidBrush(ClockEdgeColor);
                     break;
                 case ToolStripMenuItem3Name: // format
                     HandleChangeFormat();
@@ -111,9 +139,16 @@ namespace Clock
                 case ToolStripMenuItem5Name: // Digital Clock
                     CurrentClockType = ClockType.Digital;
                     break;
+                case ToolStripMenuItem6Name:
+                    this.ClockBackColor = GetColorFromPicker(this.ClockBackColor);
+                    this.ClockBackBrush = new SolidBrush(ClockBackColor);
+                    break;
                 default:
                     break;
             }
+
+            // no matter what was chosen, go ahead and refresh to it shows immediately.
+            this.Refresh();
         }
 
         private void Form1_ResizeEnd(object sender, EventArgs e)
@@ -183,7 +218,10 @@ namespace Clock
                     break;
             }
         }
-
+        /// <summary>
+        /// Overridden this OnPaint so we can manually draw our analog clock
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -193,48 +231,56 @@ namespace Clock
                 DrawClock(DateTime.Now, e.Graphics);
             }
         }
-
+        /// <summary>
+        /// use the current time to draw the analog clock piece by piece.
+        /// </summary>
+        /// <param name="stamp">The current time to render</param>
+        /// <param name="g">the graphics object on which to draw the clock</param>
         private void DrawClock(DateTime stamp, Graphics g)
         {
-            Point CenterPoint = new Point(this.DisplayRectangle.Width / 2, this.DisplayRectangle.Height / 2);
+            #region Reset Variables
+            CenterPoint = new Point(this.DisplayRectangle.Width / 2, this.DisplayRectangle.Height / 2);
 
-            Rectangle clockRect = new Rectangle();
-            int DisplayDiameter = Math.Min(this.DisplayRectangle.Width, this.DisplayRectangle.Height);
-            int ClockDiameter = (int)(DisplayDiameter * 0.9);
-            int ClockRadius = ClockDiameter / 2;
-            double NotchRadius = ClockRadius * 0.90;
-            double HourhandRadius = ClockRadius * 0.5;
-            double MinutehandRadius = ClockRadius * 0.9;
+            clockRect = new Rectangle();
+            DisplayDiameter = Math.Min(this.DisplayRectangle.Width, this.DisplayRectangle.Height);
+            ClockDiameter = (int)(DisplayDiameter * 0.9);
+            ClockRadius = ClockDiameter / 2;
+            NotchRadius = ClockRadius * 0.90;
+            HourhandRadius = ClockRadius * 0.5;
+            MinutehandRadius = ClockRadius * 0.9;
 
-            float hourNotchThickness = (float)(DisplayDiameter * 0.02);
-            float HourHandWidth = (float)(DisplayDiameter * 0.02);
-            float minuteThickness = (float)(DisplayDiameter * 0.01);
+            hourNotchThickness = (float)(DisplayDiameter * 0.02);
+            HourHandWidth = (float)(DisplayDiameter * 0.02);
+            minuteThickness = (float)(DisplayDiameter * 0.01);
 
             clockRect.Height = ClockDiameter;
             clockRect.Width = ClockDiameter;
             clockRect.X = CenterPoint.X - ClockRadius;
             clockRect.Y = CenterPoint.Y - ClockRadius;
 
-            // draw circle
-            Brush ClockBackBrush = new SolidBrush(Color.Black);
-            g.FillEllipse(ClockBackBrush, clockRect);
+            ClockEdgeThickness = (float)(DisplayDiameter * 0.02);
+            #endregion
 
-            Brush ClockEdgeBrush = new SolidBrush(Color.HotPink);
-            g.DrawEllipse(new Pen(ClockEdgeBrush, 3), clockRect);
+            // draw background circle
+            g.FillEllipse(ClockBackBrush, clockRect);
+            // draw edge circle
+            g.DrawEllipse(new Pen(ClockEdgeBrush, ClockEdgeThickness), clockRect);
 
             #region draw hour notches
+            double degreesOfTime, unitDegreesOfTime;
+            double rads;
+            double cr, sr;
+            double startX, stopX, startY, stopY;
+
             for (double hourMark = 0.0; hourMark < 12.0; hourMark ++)
             {
-                double degreesOfTime = hourMark * 30;
-
-                double unitDegreesOfTime = 90 - degreesOfTime;
-
-                double rads = (unitDegreesOfTime) / 180.0;
+                degreesOfTime = hourMark * 30;
+                unitDegreesOfTime = 90 - degreesOfTime;
+                rads = (unitDegreesOfTime) / 180.0;
 
                 // then, to find the x and y, use cos/sin
-                double cr = Math.Cos(rads * Math.PI);
-
-                double sr = Math.Sin(rads * Math.PI);
+                cr = Math.Cos(rads * Math.PI);
+                sr = Math.Sin(rads * Math.PI);
 
                 // orient based on unit circle
                 if (rads > 0.5 && rads < 1.5)
@@ -242,10 +288,10 @@ namespace Clock
                 if (rads > 1)
                     sr = -sr; 
 
-                double startX = cr * NotchRadius;
-                double stopX = cr * ClockRadius;
-                double startY = sr * NotchRadius;
-                double stopY = sr * ClockRadius;
+                startX = cr * NotchRadius;
+                stopX = cr * ClockRadius;
+                startY = sr * NotchRadius;
+                stopY = sr * ClockRadius;
 
                 g.DrawLine(new Pen(ClockEdgeBrush, hourNotchThickness),
                             (int)(CenterPoint.X + startX), (int)(CenterPoint.Y - startY),
@@ -272,18 +318,18 @@ namespace Clock
 
             // then, to find the x and y, use cos/sin
             double cd = Math.Cos(dr * Math.PI);
-            if(dr > 0.5 && dr < 1.5) { cd = -cd; }
-            double XRightFromCenter = cd * HourhandRadius;
-
             double sd = Math.Sin(dr * Math.PI);
-            if(dr > 1) { sd = -sd; }
+
+            if (dr > 0.5 && dr < 1.5) { cd = -cd; }
+            if (dr > 1) { sd = -sd; }
+
+            double XRightFromCenter = cd * HourhandRadius;
             double YUpFromCenter = sd * HourhandRadius;
 
             g.DrawLine(new Pen(ClockEdgeBrush, HourHandWidth), 
                         CenterPoint.X, CenterPoint.Y, 
                         (int)(CenterPoint.X + XRightFromCenter), (int)(CenterPoint.Y - YUpFromCenter));
             #endregion
-
 
             #region draw minute hand
             // convert minutes to degrees
@@ -297,14 +343,11 @@ namespace Clock
 
             // then, to find the x and y, use cos/sin
             double crm = Math.Cos(mrads * Math.PI);
-
             double srm = Math.Sin(mrads * Math.PI);
 
             // orient based on unit circle
-            if (mrads > 0.5 && mrads < 1.5)
-                crm = -crm;
-            if (mrads > 1)
-                srm = -srm;
+            if (mrads > 0.5 && mrads < 1.5) { crm = -crm; }
+            if (mrads > 1) { srm = -srm; }
 
             double stopXm = crm * MinutehandRadius;
             double stopYm = srm * MinutehandRadius;
@@ -316,5 +359,17 @@ namespace Clock
         }
 
         #endregion
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            // update the font size to match the form size
+            Font currentFont = this.label1.Font;
+            float newSize = GetNewFontSize(this.label1.ClientSize);
+            Font newFont = new Font(currentFont.FontFamily, newSize, currentFont.Style);
+            this.label1.Font = newFont;
+
+            // this helps the analog clock redraw
+            this.Refresh();
+        }
     }
 }
