@@ -217,6 +217,8 @@ namespace Clock
                     this.label1.Text = DateTime.Now.ToString(ClockFormat);
                     break;
             }
+
+            this.Refresh();
         }
         /// <summary>
         /// Overridden this OnPaint so we can manually draw our analog clock
