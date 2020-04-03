@@ -268,6 +268,13 @@ namespace Clock
             // draw edge circle
             g.DrawEllipse(new Pen(ClockEdgeBrush, ClockEdgeThickness), clockRect);
 
+            // draw center circle
+            g.DrawEllipse(new Pen(ClockEdgeBrush, ClockEdgeThickness), 
+                            CenterPoint.X - (ClockEdgeThickness / 4), 
+                            CenterPoint.Y - (ClockEdgeThickness / 4), 
+                            ClockEdgeThickness / 2, 
+                            ClockEdgeThickness / 2);
+
             #region draw hour notches
             double degreesOfTime, unitDegreesOfTime;
             double rads;
